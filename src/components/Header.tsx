@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { currentUser } from "@/lib/auth";
 import type { Settings } from "@/lib/store";
 
 export function Logo({ s }: { s: Settings }) {
@@ -15,19 +17,33 @@ export function Logo({ s }: { s: Settings }) {
   );
 }
 
+const pill = "flex h-10 items-center gap-1 rounded-full border border-line bg-card px-4 text-sm font-semibold";
+
+function SignIn() {
+  return <Link href="/login" className={pill}>Sign in <span className="text-muted">›</span></Link>;
+}
+
+async function Account() {
+  const user = await currentUser();
+  if (!user) return <SignIn />;
+  return (
+    <>
+      {user.role === "owner" && <Link href="/admin" className={pill}>Admin</Link>}
+      <Link href="/account" aria-label="Account" className="grid size-10 place-items-center rounded-full bg-accent text-sm font-bold text-white">
+        {(user.name || user.email).slice(0, 1).toUpperCase()}
+      </Link>
+    </>
+  );
+}
+
 export function Header({ s }: { s: Settings }) {
   return (
     <header className="flex items-center justify-between px-4 py-4">
       <Logo s={s} />
       <div className="flex items-center gap-2">
-        <Link href="/login" className="flex h-10 items-center gap-1 rounded-full border border-line bg-card px-4 text-sm font-semibold">
-          Sign in <span className="text-muted">›</span>
-        </Link>
-        <button aria-label="Menu" className="grid size-10 place-items-center rounded-full border border-line bg-card">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-            <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" />
-          </svg>
-        </button>
+        <Suspense fallback={<SignIn />}>
+          <Account />
+        </Suspense>
       </div>
     </header>
   );

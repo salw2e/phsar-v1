@@ -50,6 +50,13 @@ function open() {
       id integer primary key, slug text unique not null, name text not null, blurb text not null default '',
       price_cents integer not null, compare_cents integer, color text not null default '#4f46e5'
     );
+    create table if not exists users (
+      id integer primary key, email text unique not null, name text not null default '',
+      password_hash text not null, role text not null default 'customer', created_at integer not null default (unixepoch())
+    );
+    create table if not exists sessions (
+      token_hash text primary key, user_id integer not null references users(id) on delete cascade, expires_at integer not null
+    );
     create table if not exists bundle_items (
       bundle_id integer not null references bundles(id) on delete cascade,
       product_id integer not null references products(id) on delete cascade,
