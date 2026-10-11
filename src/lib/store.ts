@@ -79,3 +79,4 @@ export async function getBundle(slug: string): Promise<(Bundle & { products: Pro
 }
 
 export const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+export const size = (bytes: number) => (bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1e3))} KB`);

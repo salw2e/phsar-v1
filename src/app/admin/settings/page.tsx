@@ -1,13 +1,15 @@
 import { Suspense } from "react";
-import { saveSettings } from "@/app/actions/admin";
+import { savePayments, saveSettings } from "@/app/actions/admin";
 import { ActionForm } from "@/components/admin/Form";
 import { area, Check, Color, Field, file, input, skeleton } from "@/components/admin/ui";
 import { requireOwner } from "@/lib/auth";
+import { secret } from "@/lib/pay";
 import { getSettings } from "@/lib/store";
 
 async function Form() {
   await requireOwner();
   const s = await getSettings();
+  const stripe = secret("stripeKey");
   return (
     <>
       <h1 className="mt-7 text-xl font-extrabold">Settings</h1>
@@ -25,6 +27,18 @@ async function Form() {
           <Field label="Accent"><Color name="accent" value={s.accent} /></Field>
         </div>
         {s.logo && <Check name="removeLogo" label="Remove logo" on={false} />}
+      </ActionForm>
+
+      <h2 className="mt-12 text-xl font-extrabold">Payments</h2>
+      <p className="mt-1 text-sm text-muted">Leave one empty and buyers just don't see it.</p>
+      <ActionForm action={savePayments} className="mt-5 space-y-4">
+        <Field label="Stripe secret key" hint={stripe ? `Saved, ends in ${stripe.slice(-4)}. Type a new one to replace it.` : "From dashboard.stripe.com, Developers, API keys. Turns on card payments."}>
+          <input name="stripeKey" type="password" autoComplete="off" placeholder={stripe ? "••••••••" : "sk_live_..."} className={input} />
+        </Field>
+        {stripe && <Check name="removeStripe" label="Turn card payments off" on={false} />}
+        <Field label="Crypto wallets" hint="One per line, like USDT (TRC20): TXyz... Buyers send the money and paste their transaction id, you confirm it under Orders.">
+          <textarea name="wallets" defaultValue={secret("wallets")} rows={3} className={`${area} font-mono`} />
+        </Field>
       </ActionForm>
     </>
   );

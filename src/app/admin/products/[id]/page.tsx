@@ -2,12 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { addMedia, deleteMedia, deleteProduct, saveProduct } from "@/app/actions/admin";
+import { FileUpload } from "@/components/admin/FileUpload";
 import { ActionForm, Confirm } from "@/components/admin/Form";
 import { area, Check, Color, danger, dollars, Field, file, input, skeleton } from "@/components/admin/ui";
 import { Icon } from "@/components/Icon";
 import { Shot } from "@/components/ProductCard";
 import { allCategories, mediaOf, productById } from "@/lib/admin";
 import { requireOwner } from "@/lib/auth";
+import { fileOf } from "@/lib/orders";
+import { size } from "@/lib/store";
 
 async function Edit({ id }: { id: string }) {
   await requireOwner();
@@ -15,6 +18,7 @@ async function Edit({ id }: { id: string }) {
   if (id !== "new" && !p) notFound();
   const categories = allCategories();
   const media = p ? mediaOf(p.id) : [];
+  const download = p ? fileOf(p.id) : undefined;
 
   return (
     <>
@@ -60,6 +64,9 @@ async function Edit({ id }: { id: string }) {
 
       {p && (
         <>
+          <h2 className="mt-10 text-[15px] font-bold">Download</h2>
+          <FileUpload productId={p.id} current={download ? `${download.name} · ${size(download.size)}` : null} />
+
           <h2 className="mt-10 text-[15px] font-bold">Screenshots</h2>
           {media.length > 0 && (
             <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-4">

@@ -1,10 +1,12 @@
 "use server";
 
-import { updateTag } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { isVideo, removeUpload, saveUpload } from "@/lib/uploads";
+import { fileOf, setStatus } from "@/lib/orders";
+import { setSecret } from "@/lib/pay";
+import { isVideo, removeFile, removeUpload, saveUpload } from "@/lib/uploads";
 
 export type FormState = { error?: string; ok?: string } | undefined;
 
@@ -91,8 +93,10 @@ export async function deleteProduct(f: FormData) {
     ...(db.prepare("select url from media where product_id = ?").all(id) as { url: string | null }[]).map((m) => m.url),
     (db.prepare("select icon from products where id = ?").get(id) as { icon: string | null } | undefined)?.icon,
   ];
+  const file = fileOf(id);
   db.prepare("delete from products where id = ?").run(id);
   await Promise.all(files.map(removeUpload));
+  if (file) await removeFile(file.path);
   updateTag("store");
   redirect("/admin");
 }
@@ -208,4 +212,22 @@ export async function saveSettings(_: FormState, f: FormData): Promise<FormState
   if (nextLogo !== old) await removeUpload(old);
   updateTag("store");
   return { ok: "Saved" };
+}
+
+export async function savePayments(_: FormState, f: FormData): Promise<FormState> {
+  await requireOwner();
+  const key = text(f, "stripeKey");
+  if (key && !/^(sk|rk)_(test|live)_\w+$/.test(key)) return { error: "That is not a Stripe secret key, it starts with sk_live_ or sk_test_." };
+  if (key) setSecret("stripeKey", key);
+  else if (f.has("removeStripe")) setSecret("stripeKey", "");
+  setSecret("wallets", text(f, "wallets", 2000));
+  refresh();
+  return { ok: "Saved" };
+}
+
+export async function setOrder(f: FormData) {
+  await requireOwner();
+  const status = f.get("status");
+  if (status === "paid" || status === "cancelled") setStatus(Number(f.get("id")), status);
+  refresh();
 }

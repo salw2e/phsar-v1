@@ -25,7 +25,7 @@ async function View({ slug }: { slug: string }) {
 
       <Link href={`/checkout?p=${p.slug}`}
         className="mt-5 flex h-12 items-center justify-center gap-2 rounded-xl bg-accent text-[15px] font-bold text-white">
-        Buy {money(p.price_cents)}
+        {p.price_cents === 0 ? "Get it free" : `Buy ${money(p.price_cents)}`}
         {p.compare_cents && <span className="text-sm font-medium text-white/60 line-through">{money(p.compare_cents)}</span>}
       </Link>
 

@@ -3,7 +3,9 @@ import { randomBytes } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
-export const uploadDir = join(dirname(process.env.DATABASE_PATH ?? "data/phsar.db"), "uploads");
+const data = dirname(process.env.DATABASE_PATH ?? "data/phsar.db");
+export const uploadDir = join(data, "uploads");
+export const fileDir = join(data, "files");
 
 const types: Record<string, string> = {
   png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif", mp4: "video/mp4", webm: "video/webm",
@@ -29,3 +31,5 @@ export async function removeUpload(url: string | null | undefined) {
   const name = url?.startsWith("/u/") ? url.slice(3) : "";
   if (uploadName.test(name)) await unlink(join(uploadDir, name)).catch(() => {});
 }
+
+export const removeFile = (path: string) => (/^[a-f0-9]{32}$/.test(path) ? unlink(join(fileDir, path)).catch(() => {}) : undefined);
