@@ -1,5 +1,6 @@
 import "server-only";
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { io } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "./db";
@@ -50,9 +51,18 @@ export async function currentUser(): Promise<User | null> {
   return row ?? null;
 }
 
+// io() keeps what the page reads after this out of the prefetched shell, sqlite is sync so next cant tell
+export async function requireUser(next: string): Promise<User> {
+  const user = await currentUser();
+  if (!user) redirect(`/login?next=${encodeURIComponent(next)}`);
+  await io();
+  return user;
+}
+
 export async function requireOwner(): Promise<User> {
   const user = await currentUser();
   if (!user) redirect("/login?next=/admin");
   if (user.role !== "owner") redirect("/");
+  await io();
   return user;
 }
