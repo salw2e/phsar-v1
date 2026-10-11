@@ -2,11 +2,13 @@ import Link from "next/link";
 import { money, type Product } from "@/lib/store";
 import { Icon, Stars, Tags } from "./Icon";
 
-export function Shot({ caption, color, url }: { caption: string; color: string; url: string | null }) {
+export function Shot({ caption, color, url, kind }: { caption: string; color: string; url: string | null; kind?: string }) {
   return (
     <div className="relative aspect-[9/16] w-[31.5%] shrink-0 overflow-hidden rounded-xl border border-line"
       style={{ background: url ? undefined : `linear-gradient(160deg, ${color}, #0b0b0d 85%)` }}>
-      {url
+      {url && kind === "video"
+        ? <video src={url} muted loop autoPlay playsInline className="size-full object-cover" />
+        : url
         ? <img src={url} alt={caption} className="size-full object-cover" />
         : <span className="absolute inset-x-2 top-3 text-center text-[10px] font-bold leading-tight text-white/90">{caption}</span>}
     </div>
@@ -40,7 +42,7 @@ export function ProductCard({ p }: { p: Product }) {
       </div>
       {p.media.length > 0 && (
         <div className="no-scrollbar mt-3.5 flex gap-[2.75%] overflow-x-auto">
-          {p.media.map((m) => <Shot key={m.id} caption={m.caption} color={m.color} url={m.url} />)}
+          {p.media.map((m) => <Shot key={m.id} caption={m.caption} color={m.color} url={m.url} kind={m.kind} />)}
         </div>
       )}
     </Link>

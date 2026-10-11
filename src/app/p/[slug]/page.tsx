@@ -31,7 +31,7 @@ async function View({ slug }: { slug: string }) {
 
       {p.media.length > 0 && (
         <div className="no-scrollbar -mx-4 mt-6 flex gap-3 overflow-x-auto px-4 [&>*]:w-[46%]">
-          {p.media.map((m) => <Shot key={m.id} caption={m.caption} color={m.color} url={m.url} />)}
+          {p.media.map((m) => <Shot key={m.id} caption={m.caption} color={m.color} url={m.url} kind={m.kind} />)}
         </div>
       )}
 

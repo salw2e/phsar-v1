@@ -6,9 +6,9 @@ import type { Settings } from "@/lib/store";
 export function Logo({ s }: { s: Settings }) {
   return (
     <Link href="/" className="flex items-center gap-2.5">
-      <span className="grid size-9 place-items-center rounded-[10px] bg-accent text-lg font-black text-white">
-        {s.name.slice(0, 1).toUpperCase()}
-      </span>
+      {s.logo
+        ? <img src={s.logo} alt="" className="size-9 rounded-[10px] object-cover" />
+        : <span className="grid size-9 place-items-center rounded-[10px] bg-accent text-lg font-black text-white">{s.name.slice(0, 1).toUpperCase()}</span>}
       <span className="leading-none">
         <span className="block text-[17px] font-extrabold uppercase tracking-wide">{s.name}</span>
         {s.byline && <span className="mt-1 block text-[9px] font-medium uppercase tracking-[0.14em] text-muted">{s.byline}</span>}
