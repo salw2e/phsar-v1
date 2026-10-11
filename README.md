@@ -1,16 +1,18 @@
 # phsar
 
-open source store. clone it, add your products, sell.
-
-## run
+self hosted store for selling apps and other digital stuff. think app store page, but its your own site and you run it. still wip
 
 ```
 pnpm install
 pnpm dev
 ```
 
-first run creates `data/phsar.db` with a few demo products.
+makes a sqlite db in `data/` on first run and puts some fake products in so its not empty
 
-## status
+## todo
 
-early. storefront only so far. next: admin, accounts, checkout (stripe + crypto).
+- [x] storefront
+- [ ] product page
+- [ ] admin (products, settings, all of it)
+- [ ] login
+- [ ] checkout, stripe + crypto
