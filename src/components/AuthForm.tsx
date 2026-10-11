@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 import { login, signup } from "@/app/actions/auth";
+import { keep } from "./keep";
 
 const field = "h-12 w-full rounded-xl border border-line bg-card px-4 text-[15px] outline-none placeholder:text-muted focus:border-accent";
 
@@ -11,7 +12,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [state, action, pending] = useActionState(mode === "login" ? login : signup, undefined);
   const next = useSearchParams().get("next") ?? "/";
   return (
-    <form action={action} className="mt-6 space-y-2.5">
+    <form action={action} onSubmit={keep(action)} className="mt-6 space-y-2.5">
       <input type="hidden" name="next" value={next} />
       {mode === "signup" && <input name="name" placeholder="Name" autoComplete="name" className={field} />}
       <input name="email" type="email" placeholder="Email" autoComplete="email" required className={field} />
