@@ -9,10 +9,13 @@ pnpm dev
 
 makes a sqlite db in `data/` on first run and puts some fake products in so its not empty
 
+first account you sign up with is the owner, after that go to `/admin` and change whatever
+
 ## todo
 
 - [x] storefront
 - [x] product page
-- [ ] admin (products, settings, all of it)
-- [ ] login
+- [x] login
+- [x] admin (products, screenshots, bundles, categories, store settings)
 - [ ] checkout, stripe + crypto
+- [ ] orders + download delivery
