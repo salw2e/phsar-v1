@@ -12,7 +12,7 @@ makes a sqlite db in `data/` on first run and puts some fake products in so its 
 ## todo
 
 - [x] storefront
-- [ ] product page
+- [x] product page
 - [ ] admin (products, settings, all of it)
 - [ ] login
 - [ ] checkout, stripe + crypto

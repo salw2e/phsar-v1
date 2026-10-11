@@ -62,4 +62,20 @@ export async function getBundles(): Promise<Bundle[]> {
   `).all() as Bundle[];
 }
 
+export async function getProduct(slug: string): Promise<Product | null> {
+  const all = await getProducts();
+  return all.find((p) => p.slug === slug) ?? null;
+}
+
+export async function getBundle(slug: string): Promise<(Bundle & { products: Product[] }) | null> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("store");
+  const b = (await getBundles()).find((x) => x.slug === slug);
+  if (!b) return null;
+  const ids = (db.prepare("select product_id from bundle_items where bundle_id = ?").all(b.id) as { product_id: number }[]).map((r) => r.product_id);
+  const products = (await getProducts()).filter((p) => ids.includes(p.id));
+  return { ...b, products };
+}
+
 export const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;

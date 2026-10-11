@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { BundleCard } from "@/components/BundleCard";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
+import { Shell } from "@/components/Shell";
 import { getBundles, getCategories, getProducts, getSettings } from "@/lib/store";
 
 type Search = Promise<{ q?: string; c?: string }>;
@@ -60,18 +59,18 @@ async function Catalog({ searchParams }: { searchParams: Search }) {
   );
 }
 
-export default async function Home({ searchParams }: { searchParams: Search }) {
-  const s = await getSettings();
+export default function Home({ searchParams }: { searchParams: Search }) {
   return (
-    <div className="mx-auto w-full max-w-[640px]">
-      <Header s={s} />
-      <main className="px-4">
-        <h1 className="mx-auto mt-6 max-w-[14ch] text-center text-[26px] font-black uppercase leading-[1.15] tracking-tight">{s.heroTitle}</h1>
-        <Suspense fallback={<div className="mt-6 h-12 animate-pulse rounded-xl bg-card" />}>
-          <Catalog searchParams={searchParams} />
-        </Suspense>
-      </main>
-      <Footer s={s} />
-    </div>
+    <Shell>
+      <Hero />
+      <Suspense fallback={<div className="mt-6 h-12 animate-pulse rounded-xl bg-card" />}>
+        <Catalog searchParams={searchParams} />
+      </Suspense>
+    </Shell>
   );
+}
+
+async function Hero() {
+  const s = await getSettings();
+  return <h1 className="mx-auto mt-6 max-w-[14ch] text-center text-[26px] font-black uppercase leading-[1.15] tracking-tight">{s.heroTitle}</h1>;
 }
