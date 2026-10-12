@@ -2,7 +2,8 @@
 
 import { refresh, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireOwner } from "@/lib/auth";
+import { randomBytes } from "node:crypto";
+import { hashPassword, requireOwner } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { fileOf, setStatus } from "@/lib/orders";
 import { setSecret } from "@/lib/pay";
@@ -211,6 +212,34 @@ export async function saveSettings(_: FormState, f: FormData): Promise<FormState
   })();
   if (nextLogo !== old) await removeUpload(old);
   updateTag("store");
+  return { ok: "Saved" };
+}
+
+export async function savePages(_: FormState, f: FormData): Promise<FormState> {
+  await requireOwner();
+  const set = db.prepare("insert into settings (key, value) values (?, ?) on conflict(key) do update set value = excluded.value");
+  for (const k of ["pageTerms", "pagePrivacy", "pageSupport"]) set.run(k, text(f, k, 20000));
+  updateTag("store");
+  return { ok: "Saved" };
+}
+
+export async function resetPassword(_: FormState, f: FormData): Promise<FormState> {
+  await requireOwner();
+  const id = Number(f.get("id"));
+  const password = randomBytes(9).toString("base64url");
+  if (!db.prepare("update users set password_hash = ? where id = ?").run(hashPassword(password), id).changes) return { error: "User not found" };
+  db.prepare("delete from sessions where user_id = ?").run(id);
+  return { ok: `New password: ${password}` };
+}
+
+export async function saveLogin(_: FormState, f: FormData): Promise<FormState> {
+  await requireOwner();
+  const id = text(f, "googleId"), key = text(f, "googleSecret");
+  if (id && !id.endsWith(".apps.googleusercontent.com")) return { error: "Invalid client ID" };
+  setSecret("googleId", id);
+  if (key) setSecret("googleSecret", key);
+  if (!id) setSecret("googleSecret", "");
+  refresh();
   return { ok: "Saved" };
 }
 

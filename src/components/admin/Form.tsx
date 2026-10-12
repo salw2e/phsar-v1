@@ -39,7 +39,7 @@ export function Confirm({ ask, className, children }: { ask: string; className?:
   );
 }
 
-const tabs = [["Products", "/admin"], ["Orders", "/admin/orders"], ["Bundles", "/admin/bundles"], ["Categories", "/admin/categories"], ["Settings", "/admin/settings"]];
+const tabs = [["Products", "/admin"], ["Orders", "/admin/orders"], ["Customers", "/admin/customers"], ["Bundles", "/admin/bundles"], ["Categories", "/admin/categories"], ["Pages", "/admin/pages"], ["Settings", "/admin/settings"]];
 
 export function Tabs() {
   const path = usePathname();

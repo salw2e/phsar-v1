@@ -34,6 +34,15 @@ export async function startSession(userId: number) {
   });
 }
 
+export function createUser(email: string, name: string, passwordHash: string, google = 0) {
+  return db.transaction(() => {
+    const first = (db.prepare("select count(*) n from users").get() as { n: number }).n === 0;
+    const id = Number(db.prepare("insert into users (email, name, password_hash, role, google) values (?, ?, ?, ?, ?)")
+      .run(email, name, passwordHash, first ? "owner" : "customer", google).lastInsertRowid);
+    return { id, first };
+  })();
+}
+
 export async function endSession() {
   const jar = await cookies();
   const token = jar.get(COOKIE)?.value;

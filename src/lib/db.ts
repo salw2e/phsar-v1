@@ -84,6 +84,8 @@ function open() {
       primary key (bundle_id, product_id)
     );
   `);
+  const has = (table: string, col: string) => (db.prepare(`pragma table_info(${table})`).all() as { name: string }[]).some((c) => c.name === col);
+  if (!has("users", "google")) db.exec("alter table users add column google integer not null default 0");
   const empty = (db.prepare("select count(*) n from products").get() as { n: number }).n === 0;
   if (empty) seed(db);
   return db;

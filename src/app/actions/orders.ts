@@ -1,6 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -28,7 +27,7 @@ export async function buy(_: FormState, f: FormData): Promise<FormState> {
   const id = createOrder(user.id, item, "stripe");
   let url: string;
   try {
-    url = await startStripe({ id, ...item }, user.email, (await headers()).get("origin") ?? "");
+    url = await startStripe({ id, ...item }, user.email);
   } catch (e) {
     console.error("stripe:", (e as Error).message);
     setStatus(id, "cancelled");
