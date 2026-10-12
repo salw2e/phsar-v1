@@ -28,6 +28,15 @@ everything lives in `data/` (the db, uploaded screenshots, the files people buy)
 
 build with the same `DATABASE_PATH` you start with, the build reads the db
 
+or with docker, the store ends up in the `phsar` volume
+
+```
+docker build -t phsar .
+docker run -d -p 3000:3000 -v phsar:/data phsar
+```
+
+first start takes a minute, it builds inside the container
+
 put it behind nginx or caddy for https. if you sell big files raise the upload limit there (`client_max_body_size` in nginx)
 
 <picture>
