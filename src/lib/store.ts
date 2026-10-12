@@ -35,7 +35,11 @@ export async function getProducts(q = "", category = ""): Promise<Product[]> {
   cacheLife("hours");
   cacheTag("store");
   const rows = db.prepare(`
-    select p.*, c.slug as category from products p left join categories c on c.id = p.category_id
+    select p.id, p.slug, p.name, p.tagline, p.description, p.price_cents, p.compare_cents, p.icon, p.color, p.platforms, p.featured, p.is_new,
+      c.slug as category,
+      (select count(*) from reviews r where r.product_id = p.id) as reviews,
+      coalesce((select avg(rating) from reviews r where r.product_id = p.id), 0) as rating
+    from products p left join categories c on c.id = p.category_id
     where p.published = 1
       and (@q = '' or p.name like '%' || @q || '%' or p.tagline like '%' || @q || '%')
       and (@category = '' or c.slug = @category)
@@ -52,6 +56,15 @@ export async function getProducts(q = "", category = ""): Promise<Product[]> {
     is_new: r.is_new === 1,
     media: media.filter((m) => m.product_id === r.id),
   }));
+}
+
+export type Review = { id: number; author: string; rating: number; body: string; created_at: number };
+
+export async function getReviews(productId: number): Promise<Review[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("store");
+  return db.prepare("select id, author, rating, body, created_at from reviews where product_id = ? order by id desc limit 50").all(productId) as Review[];
 }
 
 export async function getBundles(): Promise<Bundle[]> {

@@ -21,7 +21,7 @@ export function AuthForm({ mode, google }: { mode: "login" | "signup"; google: b
       <input name="password" type="password" placeholder="Password" required minLength={mode === "signup" ? 8 : undefined}
         autoComplete={mode === "login" ? "current-password" : "new-password"} className={field} />
       {error && <p role="alert" className="pt-1 text-sm text-red-400">{error}</p>}
-      <button disabled={pending} className="!mt-4 h-12 w-full rounded-full bg-accent text-[15px] font-bold text-white disabled:opacity-60">
+      <button disabled={pending} className="btn glow !mt-4 h-12 w-full rounded-full text-[15px] font-bold text-white disabled:opacity-60">
         {mode === "login" ? "Log in" : "Sign up"}
       </button>
       {google && (

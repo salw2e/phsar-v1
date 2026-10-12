@@ -1,5 +1,6 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -46,4 +47,18 @@ export async function sendTx(_: FormState, f: FormData): Promise<FormState> {
   `).run(tx, id, user.id).changes;
   if (!done) return { error: "Order is closed" };
   redirect(`/orders/${id}`);
+}
+
+export async function saveReview(_: FormState, f: FormData): Promise<FormState> {
+  const user = await requireUser("/library");
+  const product = Number(f.get("product"));
+  const rating = Math.trunc(Number(f.get("rating")));
+  if (!ownedIds(user.id).includes(product)) return { error: "Buy it first" };
+  if (!(rating >= 1 && rating <= 5)) return { error: "Pick 1 to 5 stars" };
+  db.prepare(`
+    insert into reviews (product_id, user_id, author, rating, body) values (?, ?, ?, ?, ?)
+    on conflict(product_id, user_id) do update set rating = excluded.rating, body = excluded.body, author = excluded.author
+  `).run(product, user.id, user.name || user.email.split("@")[0], rating, String(f.get("body") ?? "").trim().slice(0, 1000));
+  updateTag("store");
+  return { ok: "Saved" };
 }

@@ -131,6 +131,12 @@ export async function deleteMedia(f: FormData) {
   updateTag("store");
 }
 
+export async function deleteReview(f: FormData) {
+  await requireOwner();
+  db.prepare("delete from reviews where id = ?").run(Number(f.get("id")));
+  updateTag("store");
+}
+
 export async function saveBundle(_: FormState, f: FormData): Promise<FormState> {
   await requireOwner();
   const id = Number(f.get("id")) || null;

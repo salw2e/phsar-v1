@@ -57,6 +57,14 @@ function open() {
     create table if not exists sessions (
       token_hash text primary key, user_id integer not null references users(id) on delete cascade, expires_at integer not null
     );
+    create table if not exists reviews (
+      id integer primary key,
+      product_id integer not null references products(id) on delete cascade,
+      user_id integer references users(id) on delete cascade,
+      author text not null, rating integer not null, body text not null default '',
+      created_at integer not null default (unixepoch()),
+      unique (product_id, user_id)
+    );
     create table if not exists secrets (key text primary key, value text not null);
     create table if not exists files (
       product_id integer primary key references products(id) on delete cascade,

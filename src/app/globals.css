@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0a0a0b;
-  --card: #131315;
-  --line: #232327;
-  --text: #f4f4f5;
-  --muted: #9a9aa3;
+  --bg: #07080c;
+  --card: #0d0f15;
+  --line: #1e222d;
+  --text: #f5f6f8;
+  --muted: #8a90a2;
   --accent: #3b6cf6;
 }
 
@@ -16,15 +16,37 @@
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-head: var(--font-head);
+  --font-hero: var(--font-hero);
 }
 
+html { background: var(--bg); }
+
 body {
-  background: var(--bg);
   color: var(--text);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
 }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(90% 55% at 50% -10%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
+    radial-gradient(40% 30% at 90% 12%, #ffffff0a, transparent 70%),
+    radial-gradient(45% 28% at 8% 30%, #ffffff08, transparent 70%),
+    url(/stars.svg);
+}
+
+.glow { box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 55%, transparent), inset 0 1px 0 #ffffff30; }
+.btn { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 88%, white), var(--accent)); }
+.pill { background: color-mix(in srgb, var(--accent) 17%, #0a0c12); color: color-mix(in srgb, var(--accent) 82%, white); }
+
+[popover] { color: inherit; }
+[popover]::backdrop { background: #0008; }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }

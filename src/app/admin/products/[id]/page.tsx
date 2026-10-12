@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { addMedia, deleteMedia, deleteProduct, saveProduct } from "@/app/actions/admin";
+import { addMedia, deleteMedia, deleteProduct, deleteReview, saveProduct } from "@/app/actions/admin";
 import { FileUpload } from "@/components/admin/FileUpload";
 import { ActionForm, Confirm } from "@/components/admin/Form";
 import { area, Check, Color, danger, dollars, Field, file, input, skeleton } from "@/components/admin/ui";
@@ -10,7 +10,7 @@ import { Shot } from "@/components/ProductCard";
 import { allCategories, mediaOf, productById } from "@/lib/admin";
 import { requireOwner } from "@/lib/auth";
 import { fileOf } from "@/lib/orders";
-import { size } from "@/lib/store";
+import { getReviews, size } from "@/lib/store";
 
 async function Edit({ id }: { id: string }) {
   await requireOwner();
@@ -19,6 +19,7 @@ async function Edit({ id }: { id: string }) {
   const categories = allCategories();
   const media = p ? mediaOf(p.id) : [];
   const download = p ? fileOf(p.id) : undefined;
+  const reviews = p ? await getReviews(p.id) : [];
 
   return (
     <>
@@ -83,6 +84,17 @@ async function Edit({ id }: { id: string }) {
             <input type="hidden" name="id" value={p.id} />
             <input name="files" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm" className={file} />
           </ActionForm>
+
+          {reviews.length > 0 && <h2 className="mt-10 text-[15px] font-bold">Reviews</h2>}
+          <div className="mt-3 space-y-2">
+            {reviews.map((r) => (
+              <form key={r.id} action={deleteReview} className="flex items-start justify-between gap-3 rounded-2xl border border-line bg-card p-3 text-sm">
+                <input type="hidden" name="id" value={r.id} />
+                <div className="min-w-0"><b>{r.author}</b> · {r.rating}/5<div className="break-words text-muted">{r.body}</div></div>
+                <button className="shrink-0 text-xs font-semibold text-red-400">Remove</button>
+              </form>
+            ))}
+          </div>
 
           <form action={deleteProduct} className="mt-12 border-t border-line pt-6">
             <input type="hidden" name="id" value={p.id} />
