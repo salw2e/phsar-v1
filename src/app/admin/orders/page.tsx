@@ -4,10 +4,12 @@ import { skeleton } from "@/components/admin/ui";
 import { day, methodName, Status } from "@/components/Status";
 import { requireOwner } from "@/lib/auth";
 import { allOrders } from "@/lib/orders";
+import { syncCrypto } from "@/lib/pay";
 import { money } from "@/lib/store";
 
 async function List() {
   await requireOwner();
+  await syncCrypto();
   const orders = allOrders();
   const paid = orders.filter((o) => o.status === "paid");
   return (

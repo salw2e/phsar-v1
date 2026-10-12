@@ -29,9 +29,13 @@ export const ownedIds = (userId: number) =>
 
 export function createOrder(userId: number, item: Item, method: string, paid = false) {
   return db.transaction(() => {
+    // open crypto orders never share an amount, thats how an incoming payment is matched to its order
+    let amount = item.amount_cents;
+    const taken = db.prepare("select 1 from orders where method = 'crypto' and status in ('pending', 'review') and amount_cents = ?");
+    while (method === "crypto" && taken.get(amount)) amount++;
     const id = Number(db.prepare(
       "insert into orders (user_id, title, amount_cents, method, status, paid_at) values (?, ?, ?, ?, ?, ?)",
-    ).run(userId, item.title, item.amount_cents, method, paid ? "paid" : "pending", paid ? Math.floor(Date.now() / 1000) : null).lastInsertRowid);
+    ).run(userId, item.title, amount, method, paid ? "paid" : "pending", paid ? Math.floor(Date.now() / 1000) : null).lastInsertRowid);
     const add = db.prepare("insert into order_items (order_id, product_id) values (?, ?)");
     for (const p of item.products) add.run(id, p.id);
     return id;

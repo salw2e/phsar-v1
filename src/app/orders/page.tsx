@@ -4,11 +4,12 @@ import { Shell } from "@/components/Shell";
 import { day, methodName, Status } from "@/components/Status";
 import { requireUser } from "@/lib/auth";
 import { ordersOf } from "@/lib/orders";
-import { syncStripe } from "@/lib/pay";
+import { syncCrypto, syncStripe } from "@/lib/pay";
 import { money } from "@/lib/store";
 
 async function List() {
   const user = await requireUser("/orders");
+  await syncCrypto();
   const orders = await Promise.all(ordersOf(user.id).map(syncStripe));
   return (
     <>

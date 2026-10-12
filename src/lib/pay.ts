@@ -1,5 +1,6 @@
 import "server-only";
 import { db } from "./db";
+import { origin } from "./limit";
 import { setStatus, type Order } from "./orders";
 
 export const secret = (key: string) => (db.prepare("select value from secrets where key = ?").get(key) as { value: string } | undefined)?.value ?? "";
@@ -28,7 +29,8 @@ async function stripe(path: string, body?: Record<string, string>): Promise<Sess
 }
 
 // ponytail: usd only, add a currency setting when someone needs another
-export async function startStripe(order: { id: number; title: string; amount_cents: number }, email: string, origin: string) {
+export async function startStripe(order: { id: number; title: string; amount_cents: number }, email: string) {
+  const site = await origin();
   const s = await stripe("checkout/sessions", {
     mode: "payment",
     "line_items[0][quantity]": "1",
@@ -37,8 +39,8 @@ export async function startStripe(order: { id: number; title: string; amount_cen
     "line_items[0][price_data][product_data][name]": order.title,
     client_reference_id: String(order.id),
     customer_email: email,
-    success_url: `${origin}/orders/${order.id}`,
-    cancel_url: `${origin}/orders/${order.id}`,
+    success_url: `${site}/orders/${order.id}`,
+    cancel_url: `${site}/orders/${order.id}`,
   });
   db.prepare("update orders set reference = ? where id = ?").run(s.id, order.id);
   return s.url;
@@ -54,4 +56,42 @@ export async function syncStripe(o: Order) {
   else if (s.status === "expired") setStatus(o.id, "cancelled");
   else return o;
   return { ...o, status: paid ? "paid" : "cancelled" };
+}
+
+const USDT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+export const isTron = (address: string) => /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address);
+type Transfer = { transaction_id: string; to: string; value: string; block_timestamp: number; token_info?: { address: string } };
+
+let checked = 0;
+
+// usdt sent to a tron wallet settles the open order with exactly that amount, no tx id needed
+// ponytail: at most one look every 15s and only the last 200 transfers per wallet
+export async function syncCrypto() {
+  if (Date.now() - checked < 15_000) return;
+  checked = Date.now();
+  db.prepare("update orders set status = 'cancelled' where method = 'crypto' and status = 'pending' and created_at < unixepoch() - 86400").run();
+  const open = db.prepare("select * from orders where method = 'crypto' and status in ('pending', 'review') order by id").all() as Order[];
+  const tron = wallets().filter((w) => isTron(w.address));
+  if (!open.length || !tron.length) return;
+  const since = Math.min(...open.map((o) => o.created_at)) * 1000;
+  const used = new Set((db.prepare("select reference from orders where method = 'crypto' and status = 'paid'").all() as { reference: string }[]).map((r) => r.reference));
+  const settle = db.prepare("update orders set status = 'paid', paid_at = unixepoch(), reference = ? where id = ? and status in ('pending', 'review')");
+
+  for (const w of tron) {
+    const url = `https://api.trongrid.io/v1/accounts/${w.address}/transactions/trc20?only_confirmed=true&only_to=true&limit=200&contract_address=${USDT}&min_timestamp=${since}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) }).catch(() => null);
+    if (!res?.ok) {
+      console.error("trongrid:", res?.status ?? "no reply");
+      continue;
+    }
+    const transfers: Transfer[] = (await res.json()).data ?? [];
+    for (const t of transfers.reverse()) {
+      if (t.to !== w.address || t.token_info?.address !== USDT || used.has(t.transaction_id)) continue;
+      const o = open.find((x) => x.status !== "paid" && String(x.amount_cents * 10000) === t.value && t.block_timestamp >= x.created_at * 1000);
+      if (!o) continue;
+      settle.run(t.transaction_id, o.id);
+      o.status = "paid";
+      used.add(t.transaction_id);
+    }
+  }
 }

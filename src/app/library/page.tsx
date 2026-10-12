@@ -4,10 +4,12 @@ import { Icon } from "@/components/Icon";
 import { Shell } from "@/components/Shell";
 import { requireUser } from "@/lib/auth";
 import { library } from "@/lib/orders";
+import { syncCrypto } from "@/lib/pay";
 import { size } from "@/lib/store";
 
 async function List() {
   const user = await requireUser("/library");
+  await syncCrypto();
   const items = library(user.id);
   return (
     <>

@@ -8,15 +8,19 @@ import { Shell } from "@/components/Shell";
 import { day, methodName, Status } from "@/components/Status";
 import { requireUser } from "@/lib/auth";
 import { orderOf } from "@/lib/orders";
-import { syncStripe, wallets } from "@/lib/pay";
+import { Refresh } from "@/components/Refresh";
+import { isTron, syncCrypto, syncStripe, wallets } from "@/lib/pay";
 import { money } from "@/lib/store";
 
 async function View({ id }: { id: string }) {
   const user = await requireUser(`/orders/${id}`);
+  await syncCrypto();
   const found = orderOf(user.id, Number(id));
   if (!found) notFound();
   const o = await syncStripe(found);
   const open = o.status === "pending" || o.status === "review";
+  const to = wallets();
+  const auto = to.some((w) => isTron(w.address));
 
   return (
     <>
@@ -39,16 +43,17 @@ async function View({ id }: { id: string }) {
 
       {o.method === "crypto" && open && (
         <>
-          <h2 className="mt-7 text-[15px] font-bold">Send {money(o.amount_cents)} to</h2>
+          <Refresh seconds={20} />
+          <h2 className="mt-7 text-[15px] font-bold">Send exactly {money(o.amount_cents)} to</h2>
           <div className="mt-3 space-y-2">
-            {wallets().map((w) => (
+            {to.map((w) => (
               <div key={w.address} className="rounded-2xl border border-line bg-card p-3.5">
-                <div className="text-xs font-bold uppercase tracking-wider text-muted">{w.label}</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-muted">{w.label}{isTron(w.address) && " · confirms by itself"}</div>
                 <div className="mt-1 select-all break-all font-mono text-[13px]">{w.address}</div>
               </div>
             ))}
           </div>
-          <h2 className="mt-7 text-[15px] font-bold">Transaction ID</h2>
+          <h2 className="mt-7 text-[15px] font-bold">Transaction ID{auto && <span className="font-normal text-muted"> (not needed for USDT on Tron)</span>}</h2>
           <ActionForm action={sendTx} submit={o.status === "review" ? "Update" : "Submit"} className="mt-3 space-y-3">
             <input type="hidden" name="id" value={o.id} />
             <input name="tx" defaultValue={o.reference} placeholder="Transaction ID / hash" required className={`${input} font-mono`} />
