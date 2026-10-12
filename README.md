@@ -17,6 +17,19 @@ payments are off until you put a stripe key or a wallet address in admin > setti
 
 heads up: the card flow and google login havent been run against real accounts yet
 
+## running it for real
+
+```
+pnpm build
+pnpm start
+```
+
+everything lives in `data/` (the db, uploaded screenshots, the files people buy). back that folder up and thats your whole store. set `DATABASE_PATH` if you want it somewhere else, uploads go next to it
+
+build with the same `DATABASE_PATH` you start with, the build reads the db
+
+put it behind nginx or caddy for https. if you sell big files raise the upload limit there (`client_max_body_size` in nginx)
+
 <picture>
   <source media="(min-width: 700px)" srcset="shots/shop-row.webp">
   <img src="shots/shop-grid.webp" alt="store screens">
