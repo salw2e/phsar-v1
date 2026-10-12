@@ -30,16 +30,16 @@ async function View({ id }: { id: string }) {
       </div>
 
       {o.status === "paid" && (
-        <Link href="/library" className="mt-4 flex h-12 items-center justify-center rounded-xl bg-accent text-[15px] font-bold text-white">Open your library</Link>
+        <Link href="/library" className="mt-4 flex h-12 items-center justify-center rounded-xl bg-accent text-[15px] font-bold text-white">Library</Link>
       )}
 
       {o.method === "stripe" && o.status === "pending" && (
-        <p className="mt-4 text-sm text-muted">The card payment was not finished. If you closed the payment page you can buy it again from the store.</p>
+        <p className="mt-4 text-sm text-muted">Payment not completed</p>
       )}
 
       {o.method === "crypto" && open && (
         <>
-          <h2 className="mt-7 text-[15px] font-bold">Send {money(o.amount_cents)} to one of these</h2>
+          <h2 className="mt-7 text-[15px] font-bold">Send {money(o.amount_cents)} to</h2>
           <div className="mt-3 space-y-2">
             {wallets().map((w) => (
               <div key={w.address} className="rounded-2xl border border-line bg-card p-3.5">
@@ -48,12 +48,12 @@ async function View({ id }: { id: string }) {
               </div>
             ))}
           </div>
-          <h2 className="mt-7 text-[15px] font-bold">Then paste the transaction id</h2>
-          <ActionForm action={sendTx} submit={o.status === "review" ? "Update" : "I paid"} className="mt-3 space-y-3">
+          <h2 className="mt-7 text-[15px] font-bold">Transaction ID</h2>
+          <ActionForm action={sendTx} submit={o.status === "review" ? "Update" : "Submit"} className="mt-3 space-y-3">
             <input type="hidden" name="id" value={o.id} />
-            <input name="tx" defaultValue={o.reference} placeholder="Transaction id or hash" required className={`${input} font-mono`} />
+            <input name="tx" defaultValue={o.reference} placeholder="Transaction ID / hash" required className={`${input} font-mono`} />
           </ActionForm>
-          {o.status === "review" && <p className="mt-4 text-sm text-muted">Got it. The store checks crypto payments by hand, your library unlocks once it is confirmed.</p>}
+          {o.status === "review" && <p className="mt-4 text-sm text-muted">Waiting for confirmation</p>}
         </>
       )}
     </>

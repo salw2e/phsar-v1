@@ -10,7 +10,7 @@ async function View({ slug }: { slug: string }) {
   if (!b) notFound();
   return (
     <>
-      <div className="mt-4 rounded-2xl border border-line p-5" style={{ background: `linear-gradient(150deg, ${b.color}, #0d0d12 80%)` }}>
+      <div className="mt-4 rounded-2xl border border-line p-5" style={{ background: b.color }}>
         <h1 className="text-2xl font-extrabold">{b.name}</h1>
         <p className="mt-1 text-sm text-white/75">{b.blurb}</p>
         <Link href={`/checkout?b=${b.slug}`} className="mt-5 flex h-12 items-center justify-center gap-2 rounded-xl bg-white text-[15px] font-bold text-black">

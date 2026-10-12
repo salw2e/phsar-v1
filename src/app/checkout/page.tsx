@@ -45,9 +45,9 @@ async function View({ searchParams }: { searchParams: Search }) {
       </div>
       <div className="mt-5">
         {item.products.every((x) => owned.includes(x.id))
-          ? <p className="text-sm text-muted">You already have this. <Link href="/library" className="font-semibold text-text">Open your library</Link></p>
-          : item.amount_cents === 0 ? pay("Get it free")
-          : !on.stripe && !on.crypto ? <p className="text-sm text-muted">This store is not taking payments yet.</p>
+          ? <p className="text-sm text-muted">Already owned. <Link href="/library" className="font-semibold text-text">Library</Link></p>
+          : item.amount_cents === 0 ? pay("Get")
+          : !on.stripe && !on.crypto ? <p className="text-sm text-muted">Payments are not set up yet</p>
           : <>{on.stripe && pay("Pay with card", "stripe")}{on.crypto && pay("Pay with crypto", "crypto")}</>}
       </div>
     </>

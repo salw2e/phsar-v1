@@ -34,7 +34,7 @@ async function Edit({ id }: { id: string }) {
         <Field label="Description"><textarea name="description" defaultValue={p?.description} rows={6} className={area} /></Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Price"><input name="price" defaultValue={dollars(p?.price_cents ?? 0)} inputMode="decimal" required className={input} /></Field>
-          <Field label="Old price" hint="Shown crossed out"><input name="compare" defaultValue={dollars(p?.compare_cents ?? null)} inputMode="decimal" className={input} /></Field>
+          <Field label="Old price"><input name="compare" defaultValue={dollars(p?.compare_cents ?? null)} inputMode="decimal" className={input} /></Field>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Category">
@@ -43,9 +43,9 @@ async function Edit({ id }: { id: string }) {
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </Field>
-          <Field label="Order" hint="Lower shows first"><input name="position" type="number" defaultValue={p?.position ?? 0} className={input} /></Field>
+          <Field label="Order"><input name="position" type="number" defaultValue={p?.position ?? 0} className={input} /></Field>
         </div>
-        <Field label="Tags" hint="Comma separated, like iOS, Desktop">
+        <Field label="Tags" hint="comma separated">
           <input name="platforms" defaultValue={p?.platforms} className={input} />
         </Field>
         {p && <Field label="Link" hint={`/p/${p.slug}`}><input name="slug" defaultValue={p.slug} className={input} /></Field>}
@@ -55,9 +55,9 @@ async function Edit({ id }: { id: string }) {
           <Field label="Colour"><Color name="color" value={p?.color ?? "#3b82f6"} /></Field>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-3 py-1">
-          <Check name="published" label="Visible in the store" on={p ? p.published === 1 : true} />
+          <Check name="published" label="Published" on={p ? p.published === 1 : true} />
           <Check name="featured" label="Featured" on={p?.featured === 1} />
-          <Check name="is_new" label="New badge" on={p?.is_new === 1} />
+          <Check name="is_new" label="New" on={p?.is_new === 1} />
           {p?.icon && <Check name="removeIcon" label="Remove icon" on={false} />}
         </div>
       </ActionForm>

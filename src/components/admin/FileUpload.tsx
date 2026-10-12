@@ -18,7 +18,7 @@ export function FileUpload({ productId, current }: { productId: number; current:
     xhr.onloadend = () => {
       setPct(null);
       if (xhr.status === 200) router.refresh();
-      else setError("Upload failed, try again.");
+      else setError("Upload failed");
     };
     setError("");
     setPct(0);
@@ -26,7 +26,7 @@ export function FileUpload({ productId, current }: { productId: number; current:
   }
 
   async function remove() {
-    if (!confirm("Remove the file? Buyers will have nothing to download.")) return;
+    if (!confirm("Remove file?")) return;
     await fetch(url, { method: "DELETE" });
     router.refresh();
   }
@@ -38,7 +38,7 @@ export function FileUpload({ productId, current }: { productId: number; current:
             <a href={`/dl/${productId}`} className="min-w-0 truncate font-semibold">{current}</a>
             <button type="button" onClick={remove} className="shrink-0 text-xs font-semibold text-red-400">Remove</button>
           </div>
-        : <p className="text-sm text-muted">No file yet. Buyers get this after they pay.</p>}
+        : <p className="text-sm text-muted">No file</p>}
       {pct === null
         ? <input type="file" aria-label="Download file" onChange={(e) => e.target.files?.[0] && send(e.target.files[0])} className={`${fileInput} mt-3 file:!bg-bg`} />
         : <div className="mt-4 h-2 overflow-hidden rounded-full bg-bg" role="progressbar" aria-valuenow={pct}>

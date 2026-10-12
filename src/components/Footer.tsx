@@ -4,7 +4,7 @@ import { Logo } from "./Header";
 
 const columns: [string, [string, string][]][] = [
   ["Discover", [["Browse", "/"], ["Search", "/?q="], ["Library", "/library"]]],
-  ["Account", [["Sign in", "/login"], ["Create an account", "/signup"], ["Orders", "/orders"]]],
+  ["Account", [["Sign in", "/login"], ["Sign up", "/signup"], ["Orders", "/orders"]]],
 ];
 
 export function Footer({ s }: { s: Settings }) {

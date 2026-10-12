@@ -29,7 +29,7 @@ async function List() {
             <span className="text-muted">›</span>
           </Link>
         ))}
-        {products.length === 0 && <p className="py-10 text-center text-sm text-muted">Nothing here yet.</p>}
+        {products.length === 0 && <p className="py-10 text-center text-sm text-muted">No products yet.</p>}
       </div>
     </>
   );

@@ -22,12 +22,12 @@ async function List() {
             <form action={deleteCategory} className="mt-3 flex items-center justify-between text-xs text-muted">
               <input type="hidden" name="id" value={c.id} />
               {c.products} {c.products === 1 ? "product" : "products"}
-              <Confirm ask={`Delete ${c.name}? Its products stay, without a category.`} className="font-semibold text-red-400">Delete</Confirm>
+              <Confirm ask={`Delete ${c.name}?`} className="font-semibold text-red-400">Delete</Confirm>
             </form>
           </div>
         ))}
       </div>
-      <h2 className="mt-9 text-[15px] font-bold">Add one</h2>
+      <h2 className="mt-9 text-[15px] font-bold">New category</h2>
       <ActionForm action={saveCategory} submit="Add" clear className="mt-3 space-y-3">
         <input name="name" placeholder="Name" required maxLength={40} className={input} />
       </ActionForm>

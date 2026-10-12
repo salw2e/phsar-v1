@@ -17,7 +17,7 @@ async function List() {
       <div className="mt-4 space-y-2">
         {bundles.map((b) => (
           <Link key={b.id} href={`/admin/bundles/${b.id}`} className="flex items-center gap-3 rounded-2xl border border-line bg-card p-3">
-            <span className="size-11 shrink-0 rounded-xl" style={{ background: `linear-gradient(150deg, ${b.color}, #0d0d12 90%)` }} />
+            <span className="size-11 shrink-0 rounded-xl" style={{ background: b.color }} />
             <div className="min-w-0 flex-1">
               <div className="truncate text-[15px] font-bold">{b.name}</div>
               <div className="truncate text-xs text-muted">{b.blurb}</div>

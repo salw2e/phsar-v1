@@ -1,6 +1,6 @@
 const labels: Record<string, [string, string]> = {
-  pending: ["Waiting for payment", "text-amber-400 bg-amber-400/10"],
-  review: ["Checking payment", "text-sky-400 bg-sky-400/10"],
+  pending: ["Unpaid", "text-amber-400 bg-amber-400/10"],
+  review: ["In review", "text-sky-400 bg-sky-400/10"],
   paid: ["Paid", "text-emerald-400 bg-emerald-400/10"],
   cancelled: ["Cancelled", "text-muted bg-white/5"],
 };

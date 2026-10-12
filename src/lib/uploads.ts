@@ -18,9 +18,9 @@ export async function saveUpload(file: FormDataEntryValue | null, video = false)
   if (!(file instanceof File) || file.size === 0) return null;
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
   if (!types[ext] || types[ext] !== file.type || (!video && isVideo(file.name.toLowerCase()))) {
-    throw new Error(video ? "Only png, jpg, webp, gif, mp4 or webm files." : "Only png, jpg, webp or gif images.");
+    throw new Error(video ? "Use png, jpg, webp, gif, mp4 or webm" : "Use png, jpg, webp or gif");
   }
-  if (file.size > 20 * 1024 * 1024) throw new Error("That file is over 20 MB.");
+  if (file.size > 20 * 1024 * 1024) throw new Error("Max file size is 20 MB");
   const name = `${randomBytes(12).toString("hex")}.${ext}`;
   await mkdir(uploadDir, { recursive: true });
   await writeFile(join(uploadDir, name), Buffer.from(await file.arrayBuffer()));

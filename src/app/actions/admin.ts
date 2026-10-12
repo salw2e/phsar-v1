@@ -38,9 +38,9 @@ export async function saveProduct(_: FormState, f: FormData): Promise<FormState>
   await requireOwner();
   const id = Number(f.get("id")) || null;
   const name = text(f, "name", 80);
-  if (!name) return { error: "Give it a name." };
+  if (!name) return { error: "Name is required" };
   const money = prices(f);
-  if (!money) return { error: "Prices have to be numbers, like 9 or 14.50." };
+  if (!money) return { error: "Invalid price" };
   let icon: string | null;
   try {
     icon = await saveUpload(f.get("icon"));
@@ -74,7 +74,7 @@ export async function saveProduct(_: FormState, f: FormData): Promise<FormState>
   }
 
   const old = db.prepare("select icon from products where id = ?").get(id) as { icon: string | null } | undefined;
-  if (!old) return { error: "That product is gone." };
+  if (!old) return { error: "Product not found" };
   const nextIcon = icon ?? (f.has("removeIcon") ? null : old.icon);
   db.prepare(`
     update products set name=@name, slug=@slug, tagline=@tagline, description=@description, price_cents=@price, compare_cents=@compare,
@@ -104,9 +104,9 @@ export async function deleteProduct(f: FormData) {
 export async function addMedia(_: FormState, f: FormData): Promise<FormState> {
   await requireOwner();
   const id = Number(f.get("id"));
-  if (!db.prepare("select 1 from products where id = ?").get(id)) return { error: "That product is gone." };
+  if (!db.prepare("select 1 from products where id = ?").get(id)) return { error: "Product not found" };
   const files = f.getAll("files").filter((x) => x instanceof File && x.size > 0);
-  if (files.length === 0) return { error: "Pick a file first." };
+  if (files.length === 0) return { error: "No file selected" };
   const urls: string[] = [];
   try {
     for (const file of files) urls.push((await saveUpload(file, true))!);
@@ -134,11 +134,11 @@ export async function saveBundle(_: FormState, f: FormData): Promise<FormState> 
   await requireOwner();
   const id = Number(f.get("id")) || null;
   const name = text(f, "name", 80);
-  if (!name) return { error: "Give it a name." };
+  if (!name) return { error: "Name is required" };
   const money = prices(f);
-  if (!money) return { error: "Prices have to be numbers, like 9 or 14.50." };
+  if (!money) return { error: "Invalid price" };
   const items = f.getAll("products").map(Number).filter(Boolean);
-  if (items.length < 2) return { error: "A bundle needs at least two products." };
+  if (items.length < 2) return { error: "Pick at least 2 products" };
   const row = {
     name, slug: freeSlug("bundles", slugify(name), id), blurb: text(f, "blurb", 160),
     price: money.price, compare: money.compare, color: hex(text(f, "color"), "#4f46e5"),
@@ -173,7 +173,7 @@ export async function saveCategory(_: FormState, f: FormData): Promise<FormState
   await requireOwner();
   const id = Number(f.get("id")) || null;
   const name = text(f, "name", 40);
-  if (!name) return { error: "Give it a name." };
+  if (!name) return { error: "Name is required" };
   const slug = freeSlug("categories", slugify(name), id);
   if (id) {
     db.prepare("update categories set name = ?, slug = ?, position = ? where id = ?").run(name, slug, Math.trunc(Number(f.get("position"))) || 0, id);
@@ -194,7 +194,7 @@ const settingKeys = ["name", "byline", "heroTitle", "searchHint", "footerBlurb"]
 
 export async function saveSettings(_: FormState, f: FormData): Promise<FormState> {
   await requireOwner();
-  if (!text(f, "name")) return { error: "The store needs a name." };
+  if (!text(f, "name")) return { error: "Store name is required" };
   let logo: string | null;
   try {
     logo = await saveUpload(f.get("logo"));
@@ -217,7 +217,7 @@ export async function saveSettings(_: FormState, f: FormData): Promise<FormState
 export async function savePayments(_: FormState, f: FormData): Promise<FormState> {
   await requireOwner();
   const key = text(f, "stripeKey");
-  if (key && !/^(sk|rk)_(test|live)_\w+$/.test(key)) return { error: "That is not a Stripe secret key, it starts with sk_live_ or sk_test_." };
+  if (key && !/^(sk|rk)_(test|live)_\w+$/.test(key)) return { error: "Invalid Stripe key" };
   if (key) setSecret("stripeKey", key);
   else if (f.has("removeStripe")) setSecret("stripeKey", "");
   setSecret("wallets", text(f, "wallets", 2000));

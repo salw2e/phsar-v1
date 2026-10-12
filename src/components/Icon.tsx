@@ -2,8 +2,7 @@ export function Icon({ name, color, src, size = 52 }: { name: string; color: str
   return (
     <span className="grid shrink-0 place-items-center overflow-hidden font-black text-white"
       style={{
-        width: size, height: size, borderRadius: size * 0.25, fontSize: size * 0.38,
-        background: `linear-gradient(145deg, ${color}, color-mix(in srgb, ${color} 55%, black))`,
+        width: size, height: size, borderRadius: size * 0.22, fontSize: size * 0.4, background: color,
       }}>
       {src ? <img src={src} alt="" className="size-full object-cover" /> : name.slice(0, 1)}
     </span>

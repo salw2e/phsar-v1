@@ -18,13 +18,13 @@ async function List() {
             <Icon name={p.name} color={p.color} src={p.icon} size={48} />
             <Link href={`/p/${p.slug}`} className="min-w-0 flex-1">
               <div className="truncate text-[15px] font-bold">{p.name}</div>
-              <div className="truncate text-xs text-muted">{p.file ? `${p.file} · ${size(p.size ?? 0)}` : "No file added yet"}</div>
+              <div className="truncate text-xs text-muted">{p.file ? `${p.file} · ${size(p.size ?? 0)}` : "No file yet"}</div>
             </Link>
             {p.file && <a href={`/dl/${p.id}`} className="flex h-9 shrink-0 items-center rounded-full bg-accent px-4 text-[13px] font-bold text-white">Download</a>}
           </div>
         ))}
         {items.length === 0 && (
-          <p className="py-10 text-center text-sm text-muted">Nothing here yet. <Link href="/" className="font-semibold text-text">Browse the store</Link></p>
+          <p className="py-10 text-center text-sm text-muted">No purchases yet. <Link href="/" className="font-semibold text-text">Browse</Link></p>
         )}
       </div>
     </>

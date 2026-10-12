@@ -15,9 +15,9 @@ async function Form() {
       <h1 className="mt-7 text-xl font-extrabold">Settings</h1>
       <ActionForm action={saveSettings} className="mt-5 space-y-4">
         <Field label="Store name"><input name="name" defaultValue={s.name} required maxLength={40} className={input} /></Field>
-        <Field label="Line under the name"><input name="byline" defaultValue={s.byline} maxLength={40} className={input} /></Field>
+        <Field label="Tagline"><input name="byline" defaultValue={s.byline} maxLength={40} className={input} /></Field>
         <Field label="Headline"><input name="heroTitle" defaultValue={s.heroTitle} maxLength={80} className={input} /></Field>
-        <Field label="Search box text"><input name="searchHint" defaultValue={s.searchHint} maxLength={40} className={input} /></Field>
+        <Field label="Search placeholder"><input name="searchHint" defaultValue={s.searchHint} maxLength={40} className={input} /></Field>
         <Field label="Footer text"><textarea name="footerBlurb" defaultValue={s.footerBlurb} rows={3} maxLength={300} className={area} /></Field>
         <div className="flex items-end gap-3">
           {s.logo && <img src={s.logo} alt="" className="size-11 rounded-[10px] object-cover" />}
@@ -30,13 +30,12 @@ async function Form() {
       </ActionForm>
 
       <h2 className="mt-12 text-xl font-extrabold">Payments</h2>
-      <p className="mt-1 text-sm text-muted">Leave one empty and buyers just don't see it.</p>
       <ActionForm action={savePayments} className="mt-5 space-y-4">
-        <Field label="Stripe secret key" hint={stripe ? `Saved, ends in ${stripe.slice(-4)}. Type a new one to replace it.` : "From dashboard.stripe.com, Developers, API keys. Turns on card payments."}>
-          <input name="stripeKey" type="password" autoComplete="off" placeholder={stripe ? "••••••••" : "sk_live_..."} className={input} />
+        <Field label="Stripe secret key" hint={stripe ? `saved (...${stripe.slice(-4)})` : "sk_live_... or sk_test_..."}>
+          <input name="stripeKey" type="password" autoComplete="off" placeholder={stripe ? "••••••••" : ""} className={input} />
         </Field>
-        {stripe && <Check name="removeStripe" label="Turn card payments off" on={false} />}
-        <Field label="Crypto wallets" hint="One per line, like USDT (TRC20): TXyz... Buyers send the money and paste their transaction id, you confirm it under Orders.">
+        {stripe && <Check name="removeStripe" label="Remove key" on={false} />}
+        <Field label="Crypto wallets" hint="one per line, like USDT (TRC20): address">
           <textarea name="wallets" defaultValue={secret("wallets")} rows={3} className={`${area} font-mono`} />
         </Field>
       </ActionForm>

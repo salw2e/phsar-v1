@@ -20,12 +20,12 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         autoComplete={mode === "login" ? "current-password" : "new-password"} className={field} />
       {state?.error && <p role="alert" className="pt-1 text-sm text-red-400">{state.error}</p>}
       <button disabled={pending} className="!mt-4 h-12 w-full rounded-full bg-accent text-[15px] font-bold text-white disabled:opacity-60">
-        {mode === "login" ? "Log in" : "Create account"}
+        {mode === "login" ? "Log in" : "Sign up"}
       </button>
       <p className="pt-3 text-sm text-muted">
-        {mode === "login" ? "New here? " : "Have an account? "}
+        {mode === "login" ? "No account? " : "Have an account? "}
         <Link href={mode === "login" ? `/signup?next=${encodeURIComponent(next)}` : `/login?next=${encodeURIComponent(next)}`} className="font-semibold text-text">
-          {mode === "login" ? "Create an account" : "Log in"}
+          {mode === "login" ? "Sign up" : "Log in"}
         </Link>
       </p>
     </form>

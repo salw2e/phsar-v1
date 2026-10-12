@@ -5,12 +5,12 @@ import { Icon, Stars, Tags } from "./Icon";
 export function Shot({ caption, color, url, kind }: { caption: string; color: string; url: string | null; kind?: string }) {
   return (
     <div className="relative aspect-[9/16] w-[31.5%] shrink-0 overflow-hidden rounded-xl border border-line"
-      style={{ background: url ? undefined : `linear-gradient(160deg, ${color}, #0b0b0d 85%)` }}>
+      style={{ background: url ? undefined : `color-mix(in srgb, ${color} 22%, var(--card))` }}>
       {url && kind === "video"
         ? <video src={url} muted loop autoPlay playsInline className="size-full object-cover" />
         : url
         ? <img src={url} alt={caption} className="size-full object-cover" />
-        : <span className="absolute inset-x-2 top-3 text-center text-[10px] font-bold leading-tight text-white/90">{caption}</span>}
+        : <span className="absolute inset-0 grid place-items-center px-2 text-center text-[11px] text-muted">{caption}</span>}
     </div>
   );
 }
