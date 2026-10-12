@@ -3,8 +3,8 @@ import type { Settings } from "@/lib/store";
 import { Logo } from "./Header";
 
 const columns: [string, [string, string][]][] = [
-  ["Discover", [["Browse", "/"], ["Search", "/?q="], ["Library", "/library"]]],
-  ["Account", [["Sign in", "/login"], ["Sign up", "/signup"], ["Orders", "/orders"]]],
+  ["Store", [["Browse", "/"], ["Support", "/support"]]],
+  ["Account", [["Account", "/account"], ["Library", "/library"], ["Orders", "/orders"]]],
 ];
 
 export function Footer({ s }: { s: Settings }) {
@@ -23,9 +23,8 @@ export function Footer({ s }: { s: Settings }) {
         ))}
       </div>
       <div className="mt-8 flex flex-wrap gap-x-4 gap-y-2 border-t border-line pt-5 text-xs text-muted">
-        <Link href="/terms">Terms of Use</Link>
-        <Link href="/privacy">Privacy Policy</Link>
-        <Link href="/support">Support</Link>
+        <Link href="/terms">Terms</Link>
+        <Link href="/privacy">Privacy</Link>
       </div>
     </footer>
   );

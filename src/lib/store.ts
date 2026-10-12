@@ -1,5 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "./db";
+import { defaults } from "./seed";
 
 export type Settings = Record<string, string>;
 export type Category = { id: number; slug: string; name: string };
@@ -17,7 +18,7 @@ export async function getSettings(): Promise<Settings> {
   cacheLife("hours");
   cacheTag("store");
   const rows = db.prepare("select key, value from settings").all() as { key: string; value: string }[];
-  return Object.fromEntries(rows.map((r) => [r.key, r.value]));
+  return { ...defaults, ...Object.fromEntries(rows.map((r) => [r.key, r.value])) };
 }
 
 export async function getCategories(): Promise<Category[]> {

@@ -1,12 +1,46 @@
 import type Database from "better-sqlite3";
 
-const settings: Record<string, string> = {
+export const defaults: Record<string, string> = {
   name: "phsar",
   byline: "",
   heroTitle: "apps, templates and other stuff",
   searchHint: "Search",
   accent: "#3b6cf6",
   footerBlurb: "",
+  logo: "",
+  pageTerms: `By buying from {name} you agree to this.
+
+# What you get
+Everything here is digital. After you pay it shows up in your library and you download it from there. You get a license to use it, not to resell or share it.
+
+# Payments
+Prices are in USD. Card payments go through Stripe. Crypto payments are final once confirmed.
+
+# Refunds
+Digital goods can't be returned. If a file is broken or not what the listing said, contact support and you get a fix or your money back.
+
+# Accounts
+Keep your login to yourself. Accounts used for fraud or chargebacks get closed.
+
+# Changes
+These terms can change. The current version is always on this page.`,
+  pagePrivacy: `# What is stored
+Your email, name, a hash of your password and your orders. If you sign in with Google, your name and email come from Google.
+
+# Payments
+Card details go straight to Stripe and never touch this site. For crypto only the transaction is seen.
+
+# Cookies
+One cookie, to keep you signed in. No tracking, no ads.
+
+# Sharing
+Your data is not sold or shared.
+
+# Deleting it
+Contact support and your account gets deleted.`,
+  pageSupport: `Problem with an order or a download? Send your order number and what went wrong.
+
+No contact added yet.`,
 };
 
 const categories = ["Apps", "Templates", "Icons", "Fonts", "Tools"];
@@ -31,9 +65,6 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(
 
 export function seed(db: Database.Database) {
   const run = db.transaction(() => {
-    const set = db.prepare("insert or ignore into settings (key, value) values (?, ?)");
-    for (const [k, v] of Object.entries(settings)) set.run(k, v);
-
     const cat = db.prepare("insert into categories (slug, name, position) values (?, ?, ?)");
     const catId: Record<string, number> = {};
     categories.forEach((c, i) => (catId[c] = Number(cat.run(slug(c), c, i).lastInsertRowid)));
