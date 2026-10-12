@@ -18,13 +18,13 @@ payments are off until you put a stripe key or a wallet address in admin > setti
 heads up: the card flow and google login havent been run against real accounts yet
 
 <picture>
-  <source media="(min-width: 700px)" srcset="shots/store-row.webp">
-  <img src="shots/store-grid.webp" alt="store screens">
+  <source media="(min-width: 700px)" srcset="shots/shop-row.webp">
+  <img src="shots/shop-grid.webp" alt="store screens">
 </picture>
 
 <picture>
-  <source media="(min-width: 700px)" srcset="shots/admin-row.webp">
-  <img src="shots/admin-grid.webp" alt="admin screens">
+  <source media="(min-width: 700px)" srcset="shots/owner-row.webp">
+  <img src="shots/owner-grid.webp" alt="admin screens">
 </picture>
 
 ## todo
@@ -39,4 +39,4 @@ heads up: the card flow and google login havent been run against real accounts y
 - [ ] emails (receipts, password reset)
 - [ ] cart
 - [ ] currencies other than usd
-- [ ] reviews
+- [x] reviews
