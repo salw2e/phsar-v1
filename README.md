@@ -1,43 +1,41 @@
 # phsar
 
-self hosted store for selling apps and other digital stuff. think app store page, but its your own site and you run it
+Self-hosted store for selling apps and other digital products, with an app store style product page on your own site.
 
-demo: https://app.justsal.xyz
+Demo: https://app.justsal.xyz
 
 ```
 pnpm install
 pnpm dev
 ```
 
-makes a sqlite db in `data/` on first run and puts some fake products in so its not empty
+The first run creates a SQLite database in `data/` and adds a few example products.
 
-first account you sign up with is the owner, after that go to `/admin` and change whatever
+The first account that signs up is the owner. Everything else is set up in `/admin`.
 
-payments are off until you put a stripe key or a wallet address in admin > settings. usdt sent to a tron (trc20) wallet gets matched to the order and confirms on its own, any other coin you confirm by hand under orders. google login is the same deal, paste the client id + secret in settings
+Payments are off until a Stripe key or a wallet address is added in Admin > Settings. USDT sent to a Tron (TRC20) wallet is matched to its order and confirmed automatically. Other coins are confirmed by hand under Orders. Google login is set up the same way, with the client ID and secret in Settings.
 
-heads up: the card flow and google login havent been run against real accounts yet
+The card payment flow and Google login have not been tested against real accounts yet.
 
-## running it for real
+## Running it in production
 
 ```
 pnpm build
 pnpm start
 ```
 
-everything lives in `data/` (the db, uploaded screenshots, the files people buy). back that folder up and thats your whole store. set `DATABASE_PATH` if you want it somewhere else, uploads go next to it
+Everything is stored in `data/`: the database, uploaded screenshots and the files customers buy. Backing up that folder backs up the whole store. Set `DATABASE_PATH` to keep it somewhere else, uploads are stored next to it. The build reads the database, so build with the same `DATABASE_PATH` you start with.
 
-build with the same `DATABASE_PATH` you start with, the build reads the db
-
-or with docker, the store ends up in the `phsar` volume
+With Docker the store is kept in the `phsar` volume:
 
 ```
 docker build -t phsar .
 docker run -d -p 3000:3000 -v phsar:/data phsar
 ```
 
-first start takes a minute, it builds inside the container
+The first start takes a minute because it builds inside the container.
 
-put it behind nginx or caddy for https. if you sell big files raise the upload limit there (`client_max_body_size` in nginx)
+Put it behind nginx or Caddy for HTTPS. To sell large files, raise the upload limit there (`client_max_body_size` in nginx).
 
 <picture>
   <source media="(min-width: 700px)" srcset="shots/shop-row.webp">
@@ -49,7 +47,7 @@ put it behind nginx or caddy for https. if you sell big files raise the upload l
   <img src="shots/owner-grid.webp" alt="admin screens">
 </picture>
 
-## todo
+## Todo
 
 - [x] storefront
 - [x] product page
