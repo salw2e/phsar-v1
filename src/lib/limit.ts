@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 
 const hits = new Map<string, number[]>();
 
-// ponytail: in memory, per process. move to the db if this ever runs on more than one
+// in memory, per process. move to the db if this ever runs on more than one
 export async function tooMany(what: string, max: number, minutes: number, count = true) {
   const h = await headers();
   const key = `${what}:${h.get("x-real-ip") ?? h.get("x-forwarded-for") ?? "local"}`;

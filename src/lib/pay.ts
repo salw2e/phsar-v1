@@ -28,7 +28,7 @@ async function stripe(path: string, body?: Record<string, string>): Promise<Sess
   return json;
 }
 
-// ponytail: usd only, add a currency setting when someone needs another
+// usd only, add a currency setting when someone needs another
 export async function startStripe(order: { id: number; title: string; amount_cents: number }, email: string) {
   const site = await origin();
   const s = await stripe("checkout/sessions", {
@@ -46,7 +46,7 @@ export async function startStripe(order: { id: number; title: string; amount_cen
   return s.url;
 }
 
-// ponytail: no webhook, a card order is settled when the buyer lands back on their orders. add one if orders sit unpaid
+// no webhook, a card order is settled when the buyer lands back on their orders. add one if orders sit unpaid
 export async function syncStripe(o: Order) {
   if (o.method !== "stripe" || o.status !== "pending" || !o.reference) return o;
   const s = await stripe(`checkout/sessions/${o.reference}`).catch(() => null);
@@ -65,7 +65,7 @@ type Transfer = { transaction_id: string; to: string; value: string; block_times
 let checked = 0;
 
 // usdt sent to a tron wallet settles the open order with exactly that amount, no tx id needed
-// ponytail: at most one look every 15s and only the last 200 transfers per wallet
+// at most one look every 15s and only the last 200 transfers per wallet
 export async function syncCrypto() {
   if (Date.now() - checked < 15_000) return;
   checked = Date.now();
